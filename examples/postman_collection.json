@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "PolicyFlow API Collection",
+    "description": "API requests for TripperShield PolicyFlow Engine",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Policy Intake (Create New Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client_request_id\": \"AGT-2026-0001\",\n  \"agent_id\": \"AGENT-17\",\n  \"customer_name\": \"Sample Customer\",\n  \"date_of_birth\": \"1998-04-10\",\n  \"destination\": \"INTERNATIONAL\",\n  \"trip_start\": \"2026-11-10\",\n  \"trip_end\": \"2026-11-14\",\n  \"plan_code\": \"PLUS\",\n  \"sum_insured\": 300000\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/policy-requests",
+          "host": ["{{base_url}}"],
+          "path": ["api", "policy-requests"]
+        }
+      }
+    },
+    {
+      "name": "2. Policy Intake (Duplicate - Test Idempotency)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"client_request_id\": \"AGT-2026-0001\",\n  \"agent_id\": \"AGENT-17\",\n  \"customer_name\": \"Sample Customer\",\n  \"date_of_birth\": \"1998-04-10\",\n  \"destination\": \"INTERNATIONAL\",\n  \"trip_start\": \"2026-11-10\",\n  \"trip_end\": \"2026-11-14\",\n  \"plan_code\": \"PLUS\",\n  \"sum_insured\": 300000\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/policy-requests",
+          "host": ["{{base_url}}"],
+          "path": ["api", "policy-requests"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Policy Request by ID & Audit Trail",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/policy-requests/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "policy-requests", "1"]
+        }
+      }
+    },
+    {
+      "name": "4. Submit Policy for Issuance (SUCCESS)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"scenario\": \"SUCCESS\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/policy-requests/1/submit",
+          "host": ["{{base_url}}"],
+          "path": ["api", "policy-requests", "1", "submit"]
+        }
+      }
+    },
+    {
+      "name": "5. Submit Policy with TIMEOUT_AFTER_ISSUE Scenario",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"scenario\": \"TIMEOUT_AFTER_ISSUE\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/policy-requests/1/submit",
+          "host": ["{{base_url}}"],
+          "path": ["api", "policy-requests", "1", "submit"]
+        }
+      }
+    },
+    {
+      "name": "6. Provider Callback (Idempotent Webhook)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_id\": \"EVT-100200300\",\n  \"event_type\": \"POLICY_ISSUED\",\n  \"provider_reference\": \"INS-SAMPLE-01\",\n  \"policy_number\": \"POL-20261024-ABC123\",\n  \"client_request_id\": \"AGT-2026-0001\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/mock-insurer/callback",
+          "host": ["{{base_url}}"],
+          "path": ["api", "mock-insurer", "callback"]
+        }
+      }
+    },
+    {
+      "name": "7. List Policy Requests (with filter & pagination)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/policy-requests?status=ISSUED&per_page=10",
+          "host": ["{{base_url}}"],
+          "path": ["api", "policy-requests"],
+          "query": [
+            { "key": "status", "value": "ISSUED" },
+            { "key": "per_page", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "8. Mock Insurer Status Lookup (Reconciliation)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/mock-insurer/status/INS-SAMPLE-01",
+          "host": ["{{base_url}}"],
+          "path": ["api", "mock-insurer", "status", "INS-SAMPLE-01"]
+        }
+      }
+    }
+  ]
+}
